@@ -12,7 +12,7 @@ router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # JWT settings
-SECRET_KEY = "your-secret-key"
+SECRET_KEY = "a3f8c2e1b4d9f7e6a2c5b8d1e4f7a0c3b6d9e2f5a8c1b4d7e0f3a6c9b2d5e8"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -49,7 +49,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     # find user
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if not db_user:

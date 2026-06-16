@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
+from app.auth import get_current_user
 from judge.runner import run_code
 import time
 
@@ -9,7 +10,11 @@ router = APIRouter()
 
 
 @router.post("/", response_model=schemas.SubmissionResponse)
-def submit_code(submission: schemas.SubmissionCreate, db: Session = Depends(get_db)):
+def submit_code(
+    submission: schemas.SubmissionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)  # must be logged in
+):
     # check problem exists
     problem = db.query(models.Problem).filter(models.Problem.id == submission.problem_id).first()
     if not problem:
@@ -27,7 +32,7 @@ def submit_code(submission: schemas.SubmissionCreate, db: Session = Depends(get_
     for tc in test_cases:
         start = time.time()
         result = run_code(submission.code, tc.input, problem.time_limit)
-        elapsed = int((time.time() - start) * 1000)  # milliseconds
+        elapsed = int((time.time() - start) * 1000)
         total_runtime += elapsed
 
         if result["verdict"] == "TLE":
@@ -36,16 +41,15 @@ def submit_code(submission: schemas.SubmissionCreate, db: Session = Depends(get_
 
         if result["verdict"] == "RE":
             verdict = "RE"
-            print("RE ERROR:", result["output"])  # add this line
             break
 
         if result["output"] != tc.expected_output.strip():
             verdict = "WA"
             break
 
-    # save submission
+    # save submission with actual user id
     new_submission = models.Submission(
-        user_id=1,  # hardcoded for now, will fix with auth later
+        user_id=current_user.id,  # now using real user id
         problem_id=submission.problem_id,
         code=submission.code,
         verdict=verdict,
@@ -58,7 +62,11 @@ def submit_code(submission: schemas.SubmissionCreate, db: Session = Depends(get_
 
 
 @router.get("/{submission_id}", response_model=schemas.SubmissionResponse)
-def get_submission(submission_id: int, db: Session = Depends(get_db)):
+def get_submission(
+    submission_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)  # must be logged in
+):
     submission = db.query(models.Submission).filter(models.Submission.id == submission_id).first()
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
@@ -66,5 +74,8 @@ def get_submission(submission_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/me/all", response_model=list[schemas.SubmissionResponse])
-def my_submissions(db: Session = Depends(get_db)):
-    return db.query(models.Submission).filter(models.Submission.user_id == 1).all()
+def my_submissions(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)  # must be logged in
+):
+    return db.query(models.Submission).filter(models.Submission.user_id == current_user.id).all()
