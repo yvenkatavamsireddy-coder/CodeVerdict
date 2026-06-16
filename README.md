@@ -1,5 +1,8 @@
 # CodeVerdict ⚖️
 
+## Live Demo
+🔗 https://codeverdict.onrender.com/docs
+
 An online code judging platform — submit code, get a verdict. Built with FastAPI, Docker, and SQLite.
 
 ---
