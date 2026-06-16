@@ -13,7 +13,7 @@ router = APIRouter()
 def submit_code(
     submission: schemas.SubmissionCreate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)  # must be logged in
+    current_user: models.User = Depends(get_current_user)
 ):
     # check problem exists
     problem = db.query(models.Problem).filter(models.Problem.id == submission.problem_id).first()
@@ -49,7 +49,7 @@ def submit_code(
 
     # save submission with actual user id
     new_submission = models.Submission(
-        user_id=current_user.id,  # now using real user id
+        user_id=current_user.id,
         problem_id=submission.problem_id,
         code=submission.code,
         verdict=verdict,
@@ -61,21 +61,21 @@ def submit_code(
     return new_submission
 
 
+@router.get("/me/all", response_model=list[schemas.SubmissionResponse])
+def my_submissions(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    return db.query(models.Submission).filter(models.Submission.user_id == current_user.id).all()
+
+
 @router.get("/{submission_id}", response_model=schemas.SubmissionResponse)
 def get_submission(
     submission_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)  # must be logged in
+    current_user: models.User = Depends(get_current_user)
 ):
     submission = db.query(models.Submission).filter(models.Submission.id == submission_id).first()
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
     return submission
-
-
-@router.get("/me/all", response_model=list[schemas.SubmissionResponse])
-def my_submissions(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)  # must be logged in
-):
-    return db.query(models.Submission).filter(models.Submission.user_id == current_user.id).all()
