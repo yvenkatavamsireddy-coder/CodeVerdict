@@ -1,13 +1,16 @@
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models
+from dotenv import load_dotenv
+import os
 
-SECRET_KEY = "a3f8c2e1b4d9f7e6a2c5b8d1e4f7a0c3b6d9e2f5a8c1b4d7e0f3a6c9b2d5e8"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 oauth2_scheme = HTTPBearer()
 
@@ -33,6 +36,7 @@ def get_current_user(
             detail="User not found"
         )
     return user
+
 
 def require_admin(current_user: models.User = Depends(get_current_user)):
     if not current_user.is_admin:
