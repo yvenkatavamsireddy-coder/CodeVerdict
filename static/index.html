@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeVerdict</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo">⚖️ <span>CodeVerdict</span></div>
+            <a href="#" class="nav-link" onclick="showPage('problems')">Problems</a>
+            <a href="#" class="nav-link" onclick="showPage('submissions')">Submissions</a>
+        </div>
+        <div class="nav-right">
+            <span id="nav-auth">
+                <a href="#" class="btn btn-ghost" onclick="showPage('login')">Login</a>
+                <a href="#" class="btn btn-primary" onclick="showPage('register')">Register</a>
+            </span>
+            <span id="nav-user" style="display:none">
+                <span class="nav-username" id="nav-username"></span>
+                <a href="#" class="btn btn-ghost" onclick="logout()">Logout</a>
+            </span>
+        </div>
+    </nav>
+
+    <!-- Pages -->
+    <main>
+
+        <!-- Problems Page -->
+        <div id="page-problems">
+            <div class="page-header">
+                <h1>Problems</h1>
+                <p class="page-subtitle">Pick a problem and start solving</p>
+            </div>
+            <div class="problems-table-wrap">
+                <table class="problems-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Difficulty</th>
+                            <th>Time Limit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="problems-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Problem Detail Page -->
+        <div id="page-problem-detail" style="display:none" class="split-layout">
+            <div class="problem-panel">
+                <button class="btn btn-ghost back-btn" onclick="showPage('problems')">← Back</button>
+                <div class="problem-meta">
+                    <h1 id="problem-title"></h1>
+                    <span id="problem-difficulty" class="badge"></span>
+                    <span id="problem-timelimit" class="meta-tag"></span>
+                </div>
+                <div class="problem-description" id="problem-description"></div>
+            </div>
+            <div class="editor-panel">
+                <div class="editor-header">
+                    <span class="lang-tag">🐍 Python</span>
+                    <button class="btn btn-primary submit-btn" onclick="submitCode()">▶ Run & Submit</button>
+                </div>
+                <textarea id="code-editor" placeholder="# Write your Python solution here&#10;&#10;"></textarea>
+                <div id="verdict-box" style="display:none" class="verdict-box">
+                    <div class="verdict-header">
+                        <span class="verdict-label">Result</span>
+                        <span id="verdict-text" class="verdict-text"></span>
+                    </div>
+                    <div id="verdict-runtime" class="verdict-runtime"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div id="page-login" style="display:none" class="auth-page">
+            <div class="auth-card">
+                <h1>Welcome back</h1>
+                <p class="auth-subtitle">Login to submit solutions</p>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="login-username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="Enter password">
+                </div>
+                <button class="btn btn-primary full-width" onclick="login()">Login</button>
+                <p class="auth-switch">No account? <a href="#" onclick="showPage('register')">Register</a></p>
+                <p id="login-error" class="error-msg"></p>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="page-register" style="display:none" class="auth-page">
+            <div class="auth-card">
+                <h1>Create account</h1>
+                <p class="auth-subtitle">Start solving problems today</p>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="register-username" placeholder="Choose a username">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="register-email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="register-password" placeholder="Choose a password">
+                </div>
+                <button class="btn btn-primary full-width" onclick="register()">Create Account</button>
+                <p class="auth-switch">Already have an account? <a href="#" onclick="showPage('login')">Login</a></p>
+                <p id="register-error" class="error-msg"></p>
+            </div>
+        </div>
+
+        <!-- Submissions Page -->
+        <div id="page-submissions" style="display:none">
+            <div class="page-header">
+                <h1>My Submissions</h1>
+                <p class="page-subtitle">Your submission history</p>
+            </div>
+            <div class="problems-table-wrap">
+                <div id="submissions-list"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
