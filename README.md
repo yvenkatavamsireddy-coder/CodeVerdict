@@ -1,21 +1,20 @@
-# CodeVerdict ⚖️
+# CodeVerdict 
 
-## Live Demo
-🔗https://codeverdict-lq89.onrender.com
+A competitive coding platform where you solve algorithmic problems and get instant verdicts.
 
-An online code judging platform — submit code, get a verdict. Built with FastAPI, Docker, and SQLite.
+🔗 **Live Demo:** https://codeverdict-lq89.onrender.com
 
 ---
 
 ## What It Does
 
-CodeVerdict is a backend system that judges code submissions against test cases, similar to how CodeForces, LeetCode or HackerRank work under the hood.
+CodeVerdict is a full-stack code judging platform similar to how LeetCode or HackerRank work under the hood.
 
 - Users register and log in
 - Admins create problems and add test cases
-- Users submit Python code solutions via API
+- Users write and submit Python solutions in a browser-based code editor
 - Code runs inside an isolated Docker container
-- Verdict is returned: **AC / WA / TLE / RE**
+- Verdict is returned in real time: **AC / WA / TLE / RE**
 
 ---
 
@@ -24,10 +23,12 @@ CodeVerdict is a backend system that judges code submissions against test cases,
 | Layer | Technology |
 |---|---|
 | Backend | FastAPI (Python) |
+| Frontend | HTML + CSS + JavaScript |
 | Database | SQLite + SQLAlchemy |
 | Auth | JWT (JSON Web Tokens) |
 | Judge Engine | Docker + subprocess |
 | Password Hashing | bcrypt + passlib |
+| Deployment | Render |
 
 ---
 
@@ -47,6 +48,10 @@ CodeVerdict/
 │       └── submissions.py # Submit code, get verdict
 ├── judge/
 │   └── runner.py        # Docker-based code execution engine
+├── static/
+│   ├── index.html       # Frontend UI
+│   ├── style.css        # Styles
+│   └── app.js           # Frontend logic
 └── requirements.txt
 ```
 
@@ -55,17 +60,19 @@ CodeVerdict/
 ## How the Judge Works
 
 ```
-User submits code via POST /submissions/
+User submits code via the editor
+        ↓
+FastAPI receives the submission
         ↓
 Fetch test cases for the problem from DB
         ↓
 Write code to a unique temp file
         ↓
 Run inside Docker container with:
-    - Memory limit: 128MB
-    - CPU limit: 0.5 cores
-    - Time limit: configurable per problem
-    - Network: disabled
+    - Memory limit:  128MB
+    - CPU limit:     0.5 cores
+    - Time limit:    configurable per problem
+    - Network:       disabled
         ↓
 Compare output against expected output
         ↓
@@ -131,48 +138,15 @@ source .venv/bin/activate  # Mac/Linux
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Start the server
+# 4. Create a .env file
+echo SECRET_KEY=your_secret_key_here > .env
+
+# 5. Start the server
 uvicorn app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000/docs` for the interactive API documentation.
-
----
-
-## Testing the API
-
-### 1. Register
-```bash
-POST /auth/register
-{
-  "username": "john",
-  "email": "john@example.com",
-  "password": "secret123"
-}
-```
-
-### 2. Login
-```bash
-POST /auth/login
-{
-  "username": "john",
-  "password": "secret123"
-}
-```
-
-Copy the `access_token` from the response.
-
-### 3. Authorize
-In `/docs`, click the **Authorize** button and paste your token.
-
-### 4. Submit Code
-```bash
-POST /submissions/
-{
-  "problem_id": 1,
-  "code": "print('[0,1]')"
-}
-```
+Open `http://127.0.0.1:8000` for the frontend.
+Open `http://127.0.0.1:8000/docs` for the interactive API docs.
 
 ---
 
@@ -184,9 +158,10 @@ POST /submissions/
 - Each submission uses a unique temp file to prevent conflicts
 - Passwords are hashed with bcrypt
 - Routes are protected with JWT authentication
+- Secret key stored in environment variable, not in code
 
 ---
 
 ## Author
 
-Built by Venkat as an internship portfolio project.
+Built by Vamsi as an internship portfolio project.
